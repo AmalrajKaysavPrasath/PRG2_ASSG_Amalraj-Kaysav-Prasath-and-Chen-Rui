@@ -1,64 +1,178 @@
-﻿using PRG_Assg2_Kaysav;
-using System;
-//LoadAirlines() 
-static Dictionary<string, Airline> LoadAirlines(string filePath)
+﻿// See https://aka.ms/new-console-template for more information
+using PRG_Assignment_2_Chen_Rui;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+
+Console.WriteLine("Hello, World!");
+
+Dictionary<string, Flight> FlightDict = new Dictionary<string, Flight>();
+Dictionary<string, Airline> AirlineDict = new Dictionary<string, Airline>();
+Dictionary<string, BoardingGate> BoardingGateDict = new Dictionary<string, BoardingGate>();
+
+string[] csvLines = File.ReadAllLines("flights.csv");
+
+string[] heading = csvLines[0].Split(',');
+void InitialiseFlightLoading(Dictionary<string, Flight> FlightDict)
 {
-    var airlineDictionary = new Dictionary<string, Airline>();
-
-    try
+    for (int i = 1; i < csvLines.Length; i++)
     {
-        var lines = File.ReadAllLines(filePath);
-        foreach (var line in lines.Skip(1))  // Skip header
-        {
-            var columns = line.Split(',');
-            string code = columns[0].Trim();
-            string name = columns[1].Trim();
-
-            airlineDictionary[code] = new Airline { Code = code, Name = name };
-        }
+        string[] data = csvLines[i].Split(',');
+        Flight flight = new Flight(data[0], data[1], data[2], Convert.ToDateTime(data[3]), "On Time", data[4]);
+        FlightDict.Add(data[0], flight);
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error reading the CSV file: {ex.Message}");
-    }
-
-    return airlineDictionary;
 }
 
-//LoadBoardingGates()
-static Dictionary<string, BoardingGate> LoadBoardingGates(string filePath)
-{
-    Dictionary<string, BoardingGate> gates = new Dictionary<string, BoardingGate>();
+InitialiseFlightLoading(FlightDict);
 
-    try
+string[] csvLines2 = File.ReadAllLines("airlines.csv");
+
+string[] heading2 = csvLines2[0].Split(',');
+void InitialiseAirlineLoading(Dictionary<string, Airline> AirlineDict)
+{
+    for (int i = 1; i < csvLines2.Length; i++)
     {
-        var lines = File.ReadLines(filePath).Skip(1); // Skip header
-        foreach (var line in lines)
+        string[] data = csvLines2[i].Split(',');
+        Airline airline = new Airline(data[0], data[1], new Dictionary<string, Flight>());
+        AirlineDict.Add(data[0], airline);
+    }
+}
+
+InitialiseAirlineLoading(AirlineDict);
+
+string[] csvLines3 = File.ReadAllLines("boardinggates.csv");
+
+string[] heading3 = csvLines3[0].Split(',');
+void InitialiseBoardingGateLoading(Dictionary<string, BoardingGate> BoardingGateDict)
+{
+    for (int i = 1; i < csvLines3.Length; i++)
+    {
+        string[] data = csvLines3[i].Split(',');
+        BoardingGate boardinggate = new BoardingGate(data[0], Convert.ToBoolean(data[1]), Convert.ToBoolean(data[2]), Convert.ToBoolean(data[3]), null);
+        BoardingGateDict.Add(data[0], boardinggate);
+    }
+}
+
+InitialiseBoardingGateLoading(BoardingGateDict);
+
+void DisplayFlights(Dictionary<string, Flight> FlightDict)
+{
+    Console.WriteLine("{0,-20} {1,-20} {2,-20} {3,-20} {4,-30}",
+    "Flight Number", "Airline Name", "Origin", "Destination", "Expected Departure/Arrival Time");
+
+    foreach (KeyValuePair<string, Flight> entry in FlightDict)
+    {
+        Console.WriteLine("{0,-20} {1,-20} {2,-20} {3,-20} {4,-30}",
+         entry.Value.FlightNumber, "Unassigned", entry.Value.Origin, entry.Value.Destination, entry.Value.ExpectedTime);
+    }
+}
+
+DisplayFlights(FlightDict);
+
+void AssignBoardingGate()
+{
+    while (true)
+    {
+        Console.Write("What is the Flight Number you would like to select: ");
+        string flightselect = Console.ReadLine();
+        foreach (KeyValuePair<string, Flight> entry in FlightDict)
         {
-            string[] parts = line.Split(',');
-            if (parts.Length == 4)
+            if (entry.Value.FlightNumber == flightselect)
             {
-                string name = parts[0].Trim();
-                bool supportsCFFT = parts[1].Trim() == "true";
-                bool supportsDDJB = parts[2].Trim() == "true";
-                bool supportsLWTT = parts[3].Trim() == "true";
-                gates[name] = new BoardingGate(name, supportsCFFT, supportsDDJB, supportsLWTT);
+                Console.WriteLine("{0,-20} {1,-20} {2,-20} {3,-20} {4,-30}",
+                entry.Value.FlightNumber, "Unassigned", entry.Value.Origin, entry.Value.Destination, entry.Value.ExpectedTime);
             }
         }
+
+        Console.Write("What is the Boarding Gate you would like to select: ");
+        string boardinggateselect = Console.ReadLine();
+        foreach (KeyValuePair<string, BoardingGate> entry in BoardingGateDict)
+        {
+            if (entry.Value.GateName == boardinggateselect)
+            {
+                if (entry.Value.Flight == null)
+                {
+                    Console.WriteLine("The Boarding Gate is Avaliable.");
+
+                    Console.WriteLine("{0,-20} {1,-20} {2,-20} {3,-20}",
+                    "Gate Name", "Suppoprt CFFT?", "Support DJJB?", "Support LWTT?");
+
+                    Console.WriteLine("{0,-20} {1,-20} {2,-20} {3,-20}",
+                    entry.Value.GateName, entry.Value.SupportsCFFT, entry.Value.SupportsDJJB, entry.Value.SupportsLWTT);
+
+                    Console.Write("Would you like to change the status of the Flight? (Y/N) ");
+
+                    string answer = Console.ReadLine();
+
+                    if (answer == "Y")
+                    {
+                        Console.Write("What would you like to change the status to? ");
+                        string new_status = Console.ReadLine();
+                        foreach (KeyValuePair<string, Flight> entry2 in FlightDict)
+                        {
+                            if (entry2.Value.FlightNumber == flightselect)
+                            {
+                                entry2.Value.Status = new_status;
+                            }
+                        }
+                    }
+
+                    foreach (KeyValuePair<string, Flight> entry2 in FlightDict)
+                    {
+                        if (entry2.Value.FlightNumber == flightselect)
+                        {
+                            entry.Value.Flight = entry2.Value;
+                        }
+                    }
+
+                    Console.WriteLine("Assigned Successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("The Boarding Gate is already assigned");
+                    break;
+                }
+            }
+        }
+        break;
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine("Error loading boarding gates: " + ex.Message);
-    }
-    return gates;
 }
 
-//Basic Feature 1
-// Load files and initialize dictionaries
-Console.WriteLine("Loading Airlines. . .");
-Dictionary<string, Airline> airlineDictionary = LoadAirlines("airlines.csv");
-Console.WriteLine("{0} Airlines Loaded!", airlineDictionary.Count);
+AssignBoardingGate();
+void CreateFlight()
+{
+    while (true)
+    {
+        Console.Write("What is the Flight Number of the Flight you would like to add? ");
+        string newflightnum = Console.ReadLine();
 
-Console.WriteLine("Loading Boarding Gates. . .");
-Dictionary<string, BoardingGate> boardingGateDictionary = LoadBoardingGates("boardinggates.csv");
-Console.WriteLine("{0} Boarding Gates Loaded!", boardingGateDictionary.Count);
+        Console.Write("What is the Origin of the Flight you would like to add? ");
+        string newflightorigin = Console.ReadLine();
+
+        Console.Write("What is the Destination of the Flight you would like to add? ");
+        string newflightdestination = Console.ReadLine();
+
+        Console.Write("What is the Time of Arrival/Departure of the Flight you would like to add? ");
+        string newflighttime = Console.ReadLine();
+
+        Console.Write("Is there a special request to the Flight you would like to add? ");
+        string newflightreq = Console.ReadLine();
+
+        Flight flight = new Flight(newflightnum, newflightorigin, newflightdestination, Convert.ToDateTime(newflighttime), "On Time", newflightreq);
+
+        FlightDict.Add(newflightnum, flight);
+
+        Console.WriteLine("Flight has been added");
+
+        Console.Write("Would you like to continue adding another flight? (Y/N) ");
+        if (Console.ReadLine() == "N")
+        {
+            break;
+        }
+    }
+}
+
+var sortedByKey = FlightDict.OrderBy(KeyValuePair => KeyValuePair.Key).ToList();
+foreach (var pair in sortedByKey)
+{
+    Console.WriteLine($"{pair.Key}: {pair.Value}");
+}
