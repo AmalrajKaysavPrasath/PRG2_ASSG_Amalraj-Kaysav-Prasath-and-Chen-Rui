@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,9 +14,6 @@ namespace PRG_Assg2_Kaysav
         public bool SupportsLWTT { get; set; }
         public Flight Flight { get; set; }
 
-
-        //constructors
-        public BoardingGate() { }
         public BoardingGate(string gateName, bool supportsCFFT, bool supportsDDJB, bool supportsLWTT)
         {
             GateName = gateName;
@@ -32,7 +29,10 @@ namespace PRG_Assg2_Kaysav
 
         public override string ToString()
         {
-            return $"BoardingGate: {GateName}, Flight: {Flight?.FlightNumber ?? "None"}";
+            return "Gate: " + GateName +
+                "\tSupports CFFT: " + SupportsCFFT +
+                "\tSupports DDJB: " + SupportsDDJB +
+                "\tSupports LWTT: " + SupportsLWTT;
         }
     }
 }
