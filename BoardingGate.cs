@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PRG_Assg2_Kaysav
+namespace PRG_Assg2_Kaysav_Chen_Rui
 {
     public class BoardingGate
     {
