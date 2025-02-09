@@ -103,7 +103,7 @@ static void LoadBoardingGates(Dictionary<string, BoardingGate> boardingGates)
     Console.WriteLine("Loading Boarding Gates...");
 
     // Constructing the relative path
-    string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "C:\\Users\\Kavin\\source\\repos\\Assignment\\Assignment\\boardinggates.csv");
+    string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "boardinggates.csv");
 
     string[] gatesLines = File.ReadAllLines("boardinggates.csv");
     for (int i = 1; i < gatesLines.Length; i++)
@@ -125,7 +125,7 @@ static void LoadFlights(Dictionary<string, Flight> flights, Dictionary<string, A
     Console.WriteLine("Loading Flights...");
 
     // Constructing the relative path
-    string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "C:\\Users\\Kavin\\source\\repos\\Assignment\\Assignment\\flights.csv");
+    string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "flights.csv");
 
     string[] flightsLines = File.ReadAllLines("flights.csv");
     for (int i = 1; i < flightsLines.Length; i++)
