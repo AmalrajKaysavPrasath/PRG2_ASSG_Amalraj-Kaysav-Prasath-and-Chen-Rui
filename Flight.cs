@@ -6,7 +6,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PRG_Assignment_2_Chen_Rui
+namespace PRG_Assg2_Kaysav_Chen_Rui
 {
     public class Flight
     {
